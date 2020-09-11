@@ -1,4 +1,4 @@
-name: continuous-ml-training 
+name: continuous-training 
 on: [push]
 jobs:
   run:
@@ -10,14 +10,15 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-
           # Your ML workflow goes here
           pip install -r requirements.txt
           python train.py
           
-          echo "## Model Metrics"
-          cat metrics.txt
+          echo "## Model Metrics" > report.md
+          cat metrics.txt >> report.md
           
-          echo " ## test 2"
+          echo "## data visualization" >> report.md
+          cml-publish feature_importance.png --md >> report.md
+          cml-publish residuals.png --md >> report.md
           
-          
+          cml-send-comment report.md
